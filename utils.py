@@ -9,8 +9,11 @@ chars = sorted(list(set(text)))
 stoi = {char:i for i, char in enumerate(chars)}
 itos = {i:char for i, char in enumerate(chars)}
 
-encode = lambda string: [stoi[char] for char in string]
-decode = lambda list: "".join([itos[i] for i in list])
+def encode(string):
+    return [stoi[char] for char in string]
+
+def decode(list):
+    return "".join([itos[i] for i in list])
 
 
 data = torch.tensor(encode(text), dtype=torch.long)
