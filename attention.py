@@ -20,6 +20,10 @@ class Attention(nn.Module):
 
         self.linearOut = nn.Linear(num_heads * d_v, d_model)
 
+        tril = torch.tril(torch.ones(seq_len, seq_len))
+        zeros = torch.zeros(seq_len, seq_len)
+        self.register_buffer("mask", zeros.masked_fill(tril==0, float("-inf")))
+
 
     def forward(self, XKV, XQ=None):
         
@@ -31,7 +35,7 @@ class Attention(nn.Module):
         Q = rearrange(Q, "batch_size seq_lenQ (num_heads d_k) -> batch_size num_heads seq_lenQ d_k", num_heads=self.num_heads, d_k=self.d_k)
         V = rearrange(V, "batch_size seq_len (num_heads d_v) -> batch_size num_heads seq_len d_v", num_heads=self.num_heads, d_v=self.d_v)
 
-        attn_filter = F.softmax((Q @ K.transpose(-1, -2)) / math.sqrt(self.d_k), dim=-1)
+        attn_filter = F.softmax(((Q @ K.transpose(-1, -2)) / math.sqrt(self.d_k)) + self.mask, dim=-1)
         fv = attn_filter @ V
         concatenated = rearrange(fv, "batch_size num_heads seq_lenQ d_v -> batch_size seq_lenQ (num_heads d_v)")
         output = self.linearOut(concatenated)
