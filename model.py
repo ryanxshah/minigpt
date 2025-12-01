@@ -3,8 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from attention import Attention
-from utils import vocab_size
+from utils import vocab_size, seq_len, device
 
+
+emb_dim = 32
 
 torch.manual_seed(0)
 
@@ -12,13 +14,21 @@ class LanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+        self.token_embedding_table = nn.Embedding(num_embeddings=vocab_size, embedding_dim=emb_dim)
+        self.position_embedding_table = nn.Embedding(num_embeddings=seq_len, embedding_dim=emb_dim)
+        self.projection = nn.Linear(emb_dim, vocab_size)
+    
 
     def forward(self, x, targets=None):
-        # x = (batch_size, seq_len) of indices in the vocab
-        # targets = (batch_size, seq_len)
 
-        logits = self.token_embedding_table(x)
+        # x: (batch_size, seq_len) of indices in the vocab
+        # targets: (batch_size, seq_len) of indices in the vocab
+
+        token_embeddings = self.token_embedding_table(x) # (batch_size, seq_len, emb_dim)
+        position_embeddings = self.position_embedding_table(torch.arange(0, seq_len, device=device)) # (seq_len, emb_dim)
+        x = token_embeddings + position_embeddings # (batch_size, seq_len, emb_dim)
+        logits = self.projection(x) # (batch_size, seq_len, vocab_size)
+
 
         if targets == None:
             loss = None
