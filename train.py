@@ -3,13 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from model import LanguageModel
-from utils import get_batch, decode
+from utils import get_batch, decode, DEVICE
 
 torch.manual_seed(0)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 model = LanguageModel()
-model = model.to(device)
+model = model.to(DEVICE)
 
 learning_rate = 1e-3
 eval_iters = 200
@@ -23,7 +22,7 @@ def estimate_loss():
     for split in ["train", "val"]:
         losses = torch.zeros(eval_iters)
         for k in range(eval_iters):
-            X, Y = get_batch(split, device)
+            X, Y = get_batch(split)
             logits, loss = model(X, Y)
             losses[k] = loss.item()
         out[split] = losses.mean()
@@ -33,7 +32,7 @@ def estimate_loss():
 
 def train():
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
-    print(f"Training on {device}: ")
+    print(f"Training on {DEVICE}: ")
 
 
     for iter in range(max_iters):
@@ -42,7 +41,7 @@ def train():
             losses = estimate_loss()
             print(f"step {iter}: train loss {losses["train"]:.4f}, val loss {losses["val"]:.4f}")
 
-        xb, yb = get_batch("train", device)
+        xb, yb = get_batch("train")
 
         logits, loss = model(xb, yb)
         optimizer.zero_grad(set_to_none=True)
