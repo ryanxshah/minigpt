@@ -8,7 +8,7 @@ from utils import VOCAB_SIZE, SEQ_LEN, DEVICE
 
 EMB_DIM = 32
 
-torch.manual_seed(0)
+torch.manual_seed(1337)
 
 class LanguageModel(nn.Module):
     def __init__(self):
@@ -23,9 +23,10 @@ class LanguageModel(nn.Module):
 
         # x: (batch_size, seq_len) of indices in the vocab
         # targets: (batch_size, seq_len) of indices in the vocab
+        B, T = x.shape
 
         token_embeddings = self.token_embedding_table(x) # (batch_size, seq_len, emb_dim)
-        position_embeddings = self.position_embedding_table(torch.arange(0, SEQ_LEN, device=DEVICE)) # (seq_len, emb_dim)
+        position_embeddings = self.position_embedding_table(torch.arange(0, T, device=DEVICE)) # (seq_len, emb_dim)
         x = token_embeddings + position_embeddings # (batch_size, seq_len, emb_dim)
         logits = self.projection(x) # (batch_size, seq_len, vocab_size)
 
@@ -42,13 +43,14 @@ class LanguageModel(nn.Module):
 
         return logits, loss
     
+    
     def generate(self, curr_seq, max_new_tokens):
-        for i in range(max_new_tokens):
-            logits, loss = self(curr_seq) # logits is (BS, SL, VS)
-            logits = logits[:, -1, :] # Keep only the last token in each seq
+        for _ in range(max_new_tokens):
+            curr_seq_cropped = curr_seq[:, -SEQ_LEN:]
+            logits, loss = self(curr_seq_cropped)
+            logits = logits[:, -1, :]
             next_token_probs = F.softmax(logits, dim=-1)
             next_token_idxs = torch.multinomial(next_token_probs, num_samples=1)
-
             curr_seq = torch.cat((curr_seq, next_token_idxs), dim=-1)
         return curr_seq
 
