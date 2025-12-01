@@ -27,6 +27,7 @@ BATCH_SIZE = 32
 SEQ_LEN = 8
 VOCAB_SIZE = len(chars)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+SEED = 0
 # -----
 
 # get a batch of data

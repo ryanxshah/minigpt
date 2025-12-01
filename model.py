@@ -3,12 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from attention import Attention
-from utils import VOCAB_SIZE, SEQ_LEN, DEVICE
+from utils import VOCAB_SIZE, SEQ_LEN, DEVICE, SEED
 
+torch.manual_seed(SEED)
 
 EMB_DIM = 32
 
-torch.manual_seed(1337)
 
 class LanguageModel(nn.Module):
     def __init__(self):
