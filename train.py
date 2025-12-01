@@ -55,5 +55,5 @@ train()
 
 # generate a sequence
 seq = torch.zeros(1, 1, dtype=torch.long)
-seq = seq.to(device)
+seq = seq.to(DEVICE)
 print(decode(model.generate(seq, max_new_tokens=500)[0].tolist()))

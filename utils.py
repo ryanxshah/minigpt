@@ -30,13 +30,13 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 # -----
 
 # get a batch of data
-def get_batch(split, device):
+def get_batch(split):
     data = TRAIN_DATA if split == "train" else VAL_DATA
     indices = torch.randint(0, len(data) - SEQ_LEN, (BATCH_SIZE,)) # create batch_size number of random start indices
     x = torch.stack([data[i:i+SEQ_LEN] for i in indices], dim=-2)
     y = torch.stack([data[i+1:i+SEQ_LEN+1] for i in indices], dim=-2)
 
-    x, y = x.to(device), y.to(device)
+    x, y = x.to(DEVICE), y.to(DEVICE)
     
     # return inputs, targets -> both are (batch_size, seq_len)
     # these are both tensors containing indices 
