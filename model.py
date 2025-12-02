@@ -42,6 +42,8 @@ class LanguageModel(nn.Module):
 
         self.block_sequence = nn.Sequential(
             Block(),
+            Block(),
+            Block(),
             Block()
         )
 
