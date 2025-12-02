@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from model import LanguageModel
-from utils import get_batch, decode, DEVICE
+from utils import get_batch, decode, DEVICE, SEED
 
-torch.manual_seed(0)
+torch.manual_seed(SEED)
 
 model = LanguageModel()
 model = model.to(DEVICE)
@@ -13,7 +13,7 @@ model = model.to(DEVICE)
 learning_rate = 1e-3
 eval_iters = 200
 eval_interval = 300
-max_iters = 10000
+max_iters = 5000
 
 @torch.no_grad()
 def estimate_loss():
