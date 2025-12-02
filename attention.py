@@ -4,8 +4,6 @@ import torch.nn.functional as F
 from einops import rearrange
 import math
 
-from utils import DEVICE
-
 
 class Attention(nn.Module):
     def __init__(self, d_model, num_heads, d_k, d_v, seq_len):
@@ -35,9 +33,11 @@ class Attention(nn.Module):
         V = rearrange(V, "batch_size seq_len (num_heads d_v) -> batch_size num_heads seq_len d_v", num_heads=self.num_heads, d_v=self.d_v)
 
         BS, SL, ED = XKV.shape
+        device = XKV.device
+
         tril = torch.tril(torch.ones(self.seq_len, self.seq_len))
         zeros = torch.zeros(SL, SL)
-        mask = zeros.masked_fill(tril[:SL, :SL]==0, float("-inf")).to(DEVICE)
+        mask = zeros.masked_fill(tril[:SL, :SL]==0, float("-inf")).to(device)
 
 
         attn_filter = F.softmax(((Q @ K.transpose(-1, -2)) / math.sqrt(self.d_k)) + mask, dim=-1)
