@@ -8,6 +8,8 @@ from utils import VOCAB_SIZE, SEQ_LEN, DEVICE, SEED
 torch.manual_seed(SEED)
 
 EMB_DIM = 32
+NUM_HEADS = 4
+D_K = EMB_DIM // NUM_HEADS
 
 
 class LanguageModel(nn.Module):
@@ -16,7 +18,7 @@ class LanguageModel(nn.Module):
 
         self.token_embedding_table = nn.Embedding(num_embeddings=VOCAB_SIZE, embedding_dim=EMB_DIM)
         self.position_embedding_table = nn.Embedding(num_embeddings=SEQ_LEN, embedding_dim=EMB_DIM)
-        self.attention = Attention(d_model=EMB_DIM, num_heads=1, d_k=EMB_DIM, d_v=EMB_DIM, seq_len=SEQ_LEN)
+        self.attention = Attention(d_model=EMB_DIM, num_heads=NUM_HEADS, d_k=D_K, d_v=D_K, seq_len=SEQ_LEN)
         self.projection = nn.Linear(EMB_DIM, VOCAB_SIZE)
     
 
