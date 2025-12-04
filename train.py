@@ -68,6 +68,7 @@ def train():
     torch.save({
         "model_state": model.state_dict(),
         "optimizer state": optimizer.state_dict(),
+        "util_hyperparams": util_hyperparams,
         "model_hyperparams": model_hyperparams,
         "training_hyperparams": training_hyperparams
     }, "checkpoint.pt")
