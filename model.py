@@ -3,28 +3,39 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from attention import Attention
-from utils import VOCAB_SIZE, SEQ_LEN, DEVICE, SEED
+from utils import VOCAB_SIZE
+from hyperparams import util_hyperparams, model_hyperparams
+
+# unpack util hyperparams
+SEED = util_hyperparams["seed"]
+DEVICE = util_hyperparams["device"]
+# -----
 
 torch.manual_seed(SEED)
 
-EMB_DIM = 32
-NUM_HEADS = 4
-D_K = EMB_DIM // NUM_HEADS
+# unpack model hyperparams
+BATCH_SIZE = model_hyperparams["batch_size"]
+SEQ_LEN = model_hyperparams["seq_len"]
+D_MODEL = model_hyperparams["d_model"]
+NUM_HEADS = model_hyperparams["num_heads"]
+
+D_K = D_MODEL // NUM_HEADS
+# -----
 
 
 class Block(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.masked_attention = Attention(EMB_DIM, NUM_HEADS, D_K, D_K, SEQ_LEN)
+        self.masked_attention = Attention(D_MODEL, NUM_HEADS, D_K, D_K, SEQ_LEN)
         self.mlp = nn.Sequential(
-            nn.Linear(EMB_DIM, EMB_DIM * 4),
+            nn.Linear(D_MODEL, D_MODEL * 4),
             nn.ReLU(),
-            nn.Linear(EMB_DIM * 4, EMB_DIM)
+            nn.Linear(D_MODEL * 4, D_MODEL)
         )
 
-        self.masked_attention_norm = nn.LayerNorm(EMB_DIM)
-        self.mlp_norm = nn.LayerNorm(EMB_DIM)
+        self.masked_attention_norm = nn.LayerNorm(D_MODEL)
+        self.mlp_norm = nn.LayerNorm(D_MODEL)
 
 
     def forward(self, x):
@@ -37,8 +48,8 @@ class LanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.token_embedding_table = nn.Embedding(num_embeddings=VOCAB_SIZE, embedding_dim=EMB_DIM)
-        self.position_embedding_table = nn.Embedding(num_embeddings=SEQ_LEN, embedding_dim=EMB_DIM)
+        self.token_embedding_table = nn.Embedding(num_embeddings=VOCAB_SIZE, embedding_dim=D_MODEL)
+        self.position_embedding_table = nn.Embedding(num_embeddings=SEQ_LEN, embedding_dim=D_MODEL)
 
         self.block_sequence = nn.Sequential(
             Block(),
@@ -47,7 +58,7 @@ class LanguageModel(nn.Module):
             Block()
         )
 
-        self.linearOut = nn.Linear(EMB_DIM, VOCAB_SIZE)
+        self.linearOut = nn.Linear(D_MODEL, VOCAB_SIZE)
     
 
     def forward(self, x, targets=None):

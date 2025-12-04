@@ -4,17 +4,25 @@ import torch.nn.functional as F
 
 from model import LanguageModel
 from utils import get_batch, decode, DEVICE, SEED
+from hyperparams import util_hyperparams, model_hyperparams, training_hyperparams
+
+# unpack util hyperparams
+SEED = util_hyperparams["seed"]
+DEVICE = util_hyperparams["device"]
+# -----
 
 torch.manual_seed(SEED)
-
 model = LanguageModel()
 model = model.to(DEVICE)
 
-learning_rate = 1e-3
-eval_iters = 200
-eval_interval = 300
-max_iters = 5000
+# unpack training hyperparams
+learning_rate = training_hyperparams["learning_rate"]
+max_iters = training_hyperparams["max_iters"]
+eval_iters = training_hyperparams["eval_iters"]
+eval_interval = training_hyperparams["eval_interval"]
+# -----
 
+# calculate avg loss
 @torch.no_grad()
 def estimate_loss():
     out = {}
@@ -28,11 +36,16 @@ def estimate_loss():
         out[split] = losses.mean()
     model.train()
     return out
+# -----
 
-
+# training loop
 def train():
+
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+
+    print("-----")
     print(f"Training on {DEVICE}: ")
+    print("----------")
 
 
     for iter in range(max_iters):
@@ -48,7 +61,25 @@ def train():
         loss.backward()
         optimizer.step()
 
+    print("-----")
     print("Training completed")
+    print("-----")
+
+    torch.save({
+        "model_state": model.state_dict(),
+        "optimizer state": optimizer.state_dict(),
+        "model_hyperparams": model_hyperparams,
+        "training_hyperparams": training_hyperparams
+    }, "checkpoint.pt")
+
+    print("-----")
+    print(f"Saved model to 'checkpoint.pt")
+    print("-----")
+    
+
+    
+
+
 
 # train model
 train()
