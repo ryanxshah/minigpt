@@ -12,10 +12,10 @@ DEVICE = util_hyperparams["device"]
 # -----
 
 # unpack training hyperparams
-learning_rate = training_hyperparams["learning_rate"]
-max_iters = training_hyperparams["max_iters"]
-eval_iters = training_hyperparams["eval_iters"]
-eval_interval = training_hyperparams["eval_interval"]
+LEARNING_RATE = training_hyperparams["learning_rate"]
+MAX_ITERS = training_hyperparams["max_iters"]
+EVAL_ITERS = training_hyperparams["eval_iters"]
+EVAL_INTERVAL = training_hyperparams["eval_interval"]
 # -----
 
 torch.manual_seed(SEED)
@@ -30,8 +30,8 @@ def estimate_loss():
     out = {}
     model.eval()
     for split in ["train", "val"]:
-        losses = torch.zeros(eval_iters)
-        for k in range(eval_iters):
+        losses = torch.zeros(EVAL_ITERS)
+        for k in range(EVAL_ITERS):
             X, Y = get_batch(split)
             logits, loss = model(X, Y)
             losses[k] = loss.item()
@@ -40,19 +40,30 @@ def estimate_loss():
     return out
 # -----
 
+def generate(max_new_tokens):
+
+    print("-----")
+    print(f"Generating a sequence of {max_new_tokens} new tokens:")
+    print("-----")
+
+    seq = torch.zeros(1, 1, dtype=torch.long)
+    seq = seq.to(DEVICE)
+    print(decode(model.generate(seq, max_new_tokens=max_new_tokens)[0].tolist()))
+
+
 # training loop
 def train():
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
 
     print("-----")
     print(f"Training on {DEVICE}: ")
     print("-----")
 
 
-    for iter in range(max_iters):
+    for iter in range(MAX_ITERS):
     
-        if iter % eval_interval == 0:
+        if iter % EVAL_INTERVAL == 0:
             losses = estimate_loss()
             print(f"step {iter}: train loss {losses["train"]:.4f}, val loss {losses["val"]:.4f}")
 
@@ -84,6 +95,4 @@ def train():
 train()
 
 # generate a sequence
-seq = torch.zeros(1, 1, dtype=torch.long)
-seq = seq.to(DEVICE)
-print(decode(model.generate(seq, max_new_tokens=500)[0].tolist()))
+generate(max_new_tokens=500)
