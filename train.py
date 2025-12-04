@@ -11,16 +11,18 @@ SEED = util_hyperparams["seed"]
 DEVICE = util_hyperparams["device"]
 # -----
 
-torch.manual_seed(SEED)
-model = LanguageModel()
-model = model.to(DEVICE)
-
 # unpack training hyperparams
 learning_rate = training_hyperparams["learning_rate"]
 max_iters = training_hyperparams["max_iters"]
 eval_iters = training_hyperparams["eval_iters"]
 eval_interval = training_hyperparams["eval_interval"]
 # -----
+
+torch.manual_seed(SEED)
+
+model = LanguageModel()
+model = model.to(DEVICE)
+
 
 # calculate avg loss
 @torch.no_grad()

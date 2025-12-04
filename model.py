@@ -11,8 +11,6 @@ SEED = util_hyperparams["seed"]
 DEVICE = util_hyperparams["device"]
 # -----
 
-torch.manual_seed(SEED)
-
 # unpack model hyperparams
 BATCH_SIZE = model_hyperparams["batch_size"]
 SEQ_LEN = model_hyperparams["seq_len"]
@@ -21,6 +19,8 @@ NUM_HEADS = model_hyperparams["num_heads"]
 
 D_K = D_MODEL // NUM_HEADS
 # -----
+
+torch.manual_seed(SEED)
 
 
 class Block(nn.Module):
