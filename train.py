@@ -45,7 +45,7 @@ def train():
 
     print("-----")
     print(f"Training on {DEVICE}: ")
-    print("----------")
+    print("-----")
 
 
     for iter in range(max_iters):
@@ -77,10 +77,6 @@ def train():
     print(f"Saved model to 'checkpoint.pt")
     print("-----")
     
-
-    
-
-
 
 # train model
 train()
