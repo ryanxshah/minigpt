@@ -6,14 +6,14 @@ from attention import Attention
 from utils import VOCAB_SIZE
 from hyperparams import util_hyperparams, model_hyperparams
 
-# unpack util hparams
+# unpack util hyperparams
 SEED = util_hyperparams["seed"]
 DEVICE = util_hyperparams["device"]
 # -----
 
 torch.manual_seed(SEED)
 
-# unpack model hparams
+# unpack model hyperparams
 BATCH_SIZE = model_hyperparams["batch_size"]
 SEQ_LEN = model_hyperparams["seq_len"]
 D_MODEL = model_hyperparams["d_model"]

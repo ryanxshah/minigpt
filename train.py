@@ -6,16 +6,16 @@ from model import LanguageModel
 from utils import get_batch, decode, DEVICE, SEED
 from hyperparams import util_hyperparams, model_hyperparams, training_hyperparams
 
-# unpack util hparams
-seed = util_hyperparams["seed"]
-device = util_hyperparams["device"]
+# unpack util hyperparams
+SEED = util_hyperparams["seed"]
+DEVICE = util_hyperparams["device"]
 # -----
 
-torch.manual_seed(seed)
+torch.manual_seed(SEED)
 model = LanguageModel()
-model = model.to(device)
+model = model.to(DEVICE)
 
-# unpack training hparams
+# unpack training hyperparams
 learning_rate = training_hyperparams["learning_rate"]
 max_iters = training_hyperparams["max_iters"]
 eval_iters = training_hyperparams["eval_iters"]
@@ -44,7 +44,7 @@ def train():
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
     print("-----")
-    print(f"Training on {device}: ")
+    print(f"Training on {DEVICE}: ")
     print("----------")
 
 

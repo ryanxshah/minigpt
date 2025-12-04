@@ -6,7 +6,7 @@ seed = util_hyperparams["seed"]
 device = util_hyperparams["device"]
 # -----
 
-# unpack model hparams
+# unpack model hyperparams
 batch_size = model_hyperparams["batch_size"]
 seq_len = model_hyperparams["seq_len"]
 d_model = model_hyperparams["d_model"]
