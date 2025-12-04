@@ -11,6 +11,7 @@ BATCH_SIZE = model_hyperparams["batch_size"]
 SEQ_LEN = model_hyperparams["seq_len"]
 D_MODEL = model_hyperparams["d_model"]
 NUM_HEADS = model_hyperparams["num_heads"]
+# -----
 
 
 torch.manual_seed(SEED)
@@ -30,7 +31,7 @@ def encode(string):
 def decode(list):
     return "".join([itos[i] for i in list])
 
-
+# -----
 DATA = torch.tensor(encode(text), dtype=torch.long)
 n = int(0.9*len(DATA))
 TRAIN_DATA = DATA[:n]
