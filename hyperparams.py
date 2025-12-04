@@ -14,7 +14,7 @@ model_hyperparams = {
 
 training_hyperparams = {
     "learning_rate": 1e-3,
-    "max_iters": 300,
+    "max_iters": 5000,
     "eval_iters": 200,
-    "eval_interval": 5000
+    "eval_interval": 300
 }

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from model import LanguageModel
-from utils import get_batch, decode, DEVICE, SEED
+from utils import get_batch, decode
 from hyperparams import util_hyperparams, model_hyperparams, training_hyperparams
 
 # unpack util hyperparams
