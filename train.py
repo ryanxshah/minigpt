@@ -43,18 +43,19 @@ def estimate_loss():
 def create_model_card(checkpoint_path):
     checkpoint = torch.load(checkpoint_path)
 
-    lines = ["# Model Card\n", "## Utility Hyperparameters:\n"]
+    lines = ["# Model Card\n"]
 
-    for key, value in checkpoint["util_hyperparams"].items():
-        lines.append(f"{key}: {value}\n")
-    lines.append("## Model Hyperparameters:\n")
-    for key, value in checkpoint["model_hyperparams"].items():
-        lines.append(f"{key}: {value}\n")
-    lines.append("# Training Hyperparameters:\n")
-    for key, value in checkpoint["training_hyperparams"].items():
-        lines.append(f"{key}: {value}\n")
+    lines.append("### Utility Hyperparameters:\n")
+    util_lines = [f"**{key}:** {value}" for key, value in checkpoint["util_hyperparams"].items()]
+    lines.extend(["<br>".join(util_lines), "\n"])
+    lines.append("### Model Hyperparameters:\n")
+    model_lines = [f"**{key}:** {value}" for key, value in checkpoint["model_hyperparams"].items()]
+    lines.extend(["<br>".join(model_lines), "\n"])
+    lines.append("### Training Hyperparameters:\n")
+    training_lines = [f"**{key}:** {value}" for key, value in checkpoint["training_hyperparams"].items()]
+    lines.append("<br>".join(training_lines))
 
-    content = "\n".join(lines)
+    content = "".join(lines)
 
     with open("model_card.md", "w", encoding="utf-8") as f:
         f.write(content)
