@@ -40,6 +40,26 @@ def estimate_loss():
     return out
 # -----
 
+def create_model_card(checkpoint_path):
+    checkpoint = torch.load(checkpoint_path)
+
+    lines = ["# Model Card\n", "## Utility Hyperparameters:\n"]
+
+    for key, value in checkpoint["util_hyperparams"].items():
+        lines.append(f"{key}: {value}\n")
+    lines.append("## Model Hyperparameters:\n")
+    for key, value in checkpoint["model_hyperparams"].items():
+        lines.append(f"{key}: {value}\n")
+    lines.append("# Training Hyperparameters:\n")
+    for key, value in checkpoint["training_hyperparams"].items():
+        lines.append(f"{key}: {value}\n")
+
+    content = "\n".join(lines)
+
+    with open("model_card.md", "w", encoding="utf-8") as f:
+        f.write(content)
+
+
 def generate(max_new_tokens):
 
     print("-----")
@@ -86,10 +106,11 @@ def train():
         "training_hyperparams": training_hyperparams
     }, "checkpoint.pt")
 
+    create_model_card("checkpoint.pt")
+
     print("-----")
     print(f"Saved model to 'checkpoint.pt")
     print("-----")
-    
 
 # train model
 train()
