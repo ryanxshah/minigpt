@@ -1,3 +1,6 @@
+# Project-specific files
+checkpoints/
+
 # Mac system files
 .DS_Store
 
