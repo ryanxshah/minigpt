@@ -2,21 +2,28 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from pathlib import Path
+
 from model import LanguageModel
 from utils import get_batch, decode
 from hyperparams import util_hyperparams, model_hyperparams, training_hyperparams
 
+
 # unpack util hyperparams
 SEED = util_hyperparams["seed"]
 DEVICE = util_hyperparams["device"]
-# -----
+NAME = util_hyperparams["name"]
 
 # unpack training hyperparams
 LEARNING_RATE = training_hyperparams["learning_rate"]
 MAX_ITERS = training_hyperparams["max_iters"]
 EVAL_ITERS = training_hyperparams["eval_iters"]
 EVAL_INTERVAL = training_hyperparams["eval_interval"]
-# -----
+
+# directory for saving model checkpoints
+SAVE_DIR = Path("checkpoints") / NAME
+SAVE_DIR.mkdir(parents=True, exist_ok=True)
+
 
 torch.manual_seed(SEED)
 
@@ -38,7 +45,28 @@ def estimate_loss():
         out[split] = losses.mean()
     model.train()
     return out
-# -----
+
+
+def create_model_card(checkpoint_path):
+    checkpoint = torch.load(checkpoint_path)
+
+    lines = ["# Model Card\n"]
+
+    lines.append("### Utility Hyperparameters:\n")
+    util_lines = [f"**{key}:** {value}" for key, value in checkpoint["util_hyperparams"].items()]
+    lines.extend(["<br>".join(util_lines), "\n"])
+    lines.append("### Model Hyperparameters:\n")
+    model_lines = [f"**{key}:** {value}" for key, value in checkpoint["model_hyperparams"].items()]
+    lines.extend(["<br>".join(model_lines), "\n"])
+    lines.append("### Training Hyperparameters:\n")
+    training_lines = [f"**{key}:** {value}" for key, value in checkpoint["training_hyperparams"].items()]
+    lines.append("<br>".join(training_lines))
+
+    content = "".join(lines)
+
+    with open(SAVE_DIR / "model_card.md", "w", encoding="utf-8") as f:
+        f.write(content)
+
 
 def generate(max_new_tokens):
 
@@ -84,12 +112,13 @@ def train():
         "util_hyperparams": util_hyperparams,
         "model_hyperparams": model_hyperparams,
         "training_hyperparams": training_hyperparams
-    }, "checkpoint.pt")
+    }, SAVE_DIR / f"{NAME}.pt")
+
+    create_model_card(SAVE_DIR / f"{NAME}.pt")
 
     print("-----")
     print(f"Saved model to 'checkpoint.pt")
     print("-----")
-    
 
 # train model
 train()
