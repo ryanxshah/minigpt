@@ -1,4 +1,4 @@
-# minigpt
+# miniGPT
 
 This repository is an implementation of a language model based on the GPT architecture. It uses character-level tokenization to predict the next token based on all preceding tokens. Additionally, this model uses a masked attention mechanism I wrote for general use.
 
